@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var client *mongo.Client
 
+// ConnectMongoDB establishes a connection to MongoDB
 func ConnectMongoDB() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -30,6 +32,24 @@ func ConnectMongoDB() {
 	fmt.Println("Connected to MongoDB!")
 }
 
+// AddUser inserts a new user into the database
+func AddUser(username, password string) {
+	collection := client.Database("testdb").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := collection.InsertOne(ctx, map[string]interface{}{
+		"username": username,
+		"password": password,
+	})
+	if err != nil {
+		log.Fatalf("Failed to insert user: %v", err)
+	}
+
+	fmt.Println("User added successfully")
+}
+
+// Login validates user credentials
 func Login(username, password string) bool {
 	collection := client.Database("testdb").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

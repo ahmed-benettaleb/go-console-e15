@@ -80,4 +80,17 @@ func main() {
 		}
 		fmt.Println(weather)
 	}
+
+	// Connect to MongoDB
+	ConnectMongoDB()
+
+	// Add a test user
+	AddUser("testuser", "testpassword")
+
+	// Test login
+	if Login("testuser", "testpassword") {
+		fmt.Println("Login successful")
+	} else {
+		fmt.Println("Login failed")
+	}
 }
