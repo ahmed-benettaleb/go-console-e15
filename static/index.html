@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Weather App</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Helvetica,Arial;margin:2rem}
+    input{padding:0.5rem;font-size:1rem}
+    button{padding:0.5rem 1rem;margin-left:0.5rem}
+    pre{background:#f5f5f5;padding:1rem}
+  </style>
+</head>
+<body>
+  <h1>Weather App</h1>
+  <p>Entrez une ville :</p>
+  <input id="city" placeholder="Paris">
+  <button id="search">Rechercher</button>
+  <h2>Résultat</h2>
+  <pre id="result">—</pre>
+
+  <script>
+    document.getElementById('search').addEventListener('click', async () => {
+      const city = document.getElementById('city').value.trim();
+      if (!city) return alert('Entrez une ville');
+      const res = await fetch('/api/weather?q=' + encodeURIComponent(city));
+      if (!res.ok) {
+        document.getElementById('result').textContent = 'Erreur: ' + res.statusText;
+        return;
+      }
+      const data = await res.json();
+      document.getElementById('result').textContent = data.result;
+    });
+  </script>
+</body>
+</html>

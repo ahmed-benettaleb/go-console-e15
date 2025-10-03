@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -59,6 +60,27 @@ func main() {
 		fmt.Println("OPENWEATHER_API_KEY non défini — utilisation de la clé intégrée.")
 	}
 
+	// CLI flags
+	guiFlag := flag.Bool("gui", false, "Use Gio GUI")
+	webFlag := flag.Bool("web", false, "Start web server (open http://localhost:8080)")
+	portFlag := flag.String("port", "8080", "Port for web server (or set WEB_PORT env)")
+	flag.Parse()
+	if *guiFlag {
+		// run GUI version (in a new file gui.go)
+		runGUI(apiKey)
+		return
+	}
+	if *webFlag {
+		// allow env override
+		port := *portFlag
+		if envp := strings.TrimSpace(os.Getenv("WEB_PORT")); envp != "" {
+			port = envp
+		}
+		// run web server
+		runWeb(apiKey, port)
+		return
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("Entrez une ville (ou 'q' pour quitter) : ")
@@ -70,7 +92,7 @@ func main() {
 		}
 		if city == "q" || city == "quit" || city == "exit" {
 			fmt.Println("Au revoir !")
-			return
+			break
 		}
 
 		weather, err := getWeather(city, apiKey)
